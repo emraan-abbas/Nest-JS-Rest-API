@@ -17,24 +17,28 @@ export class BlogsController {
 
 
   @Get('get')
-  getAllBlogs() {
-    return this.blogService.getAllBlogs();
+  async getAllBlogs() {
+    return await this.blogService.getAllBlogs();
   };
 
   @Get(':id')
-  getABlog(@Param('id') blogId:string) {
-    return this.blogService.getABlog(blogId);
+  async getABlog(@Param('id') blogId:string) {
+    return await this.blogService.getABlog(blogId);
   };
 
   @Patch(':id')
-  updateBlog(
+  async updateBlog(
     @Param('id') blogId: string,
     @Body('title') title: string,
     @Body('description') description: string
-  ) {};
+  ) {
+    return await this.blogService.updateBlog(blogId, title, description)
+  };
 
   @Delete(':id')
-  deleteBlog(@Param('id') blogId: string) {};
+  async deleteBlog(@Param('id') blogId: string) {
+    return await this.blogService.deleteBlog(blogId)
+  };
 
 };
 

@@ -18,29 +18,28 @@ export class BlogsService {
       return result;
     }
     catch(error){
-      return {
-        Message:'Error at Add Blog',
-        error
-      }
+      throw new NotFoundException('ERROR AT ADD BLOG') 
     }
   };
 
   async getAllBlogs() {
     try{
-      const allBlogs = await this.blogModel.find()
-      return allBlogs;
+      const allBlogs = await this.blogModel.find().exec();
+      return allBlogs.map(e => ({     // Just reshaping output here by using MAP
+        id: e.id,
+        title: e.title,
+        description: e.description
+      }));
     }
     catch(error){
-      return {
-        Message:'Error at Get All Blogs',
-        error
-      }
+      throw new NotFoundException('ERROR AT FIND ALL BLOGS')
+
     }
   };
 
-  getABlog(blogId: string) {
+  async getABlog(blogId: string) {
     try{
-      const blog = this.blogModel.findById(blogId)
+      const blog = await this.blogModel.findById(blogId)
       if(!blog){
         throw new NotFoundException('No Blog Found')
       }
@@ -49,16 +48,29 @@ export class BlogsService {
       }
     }
     catch(error){
-      return {
-        message:'Error at Get A Blog',
-        error
-      }
+      throw new NotFoundException('ERROR AT GET A BLOG')
     }  
   };
 
-  updateBlog(blogId: string, title: string, description: string) {
-    
+  async updateBlog(blogId: string, title: string, description: string) {
+    const blog = await this.getABlog(blogId);
+    if(title){
+      blog.title = title;
+    };
+    if(description){
+      blog.description = description
+    };
+    return await blog.save();
   };
+
+  async deleteBlog(blogId: string) {
+    try{
+      return this.blogModel.deleteOne({_id: blogId})
+    }
+    catch(error){
+      throw new NotFoundException('ERROR AT DELETE A BLOG')
+    }
+  }
 
 };
 
